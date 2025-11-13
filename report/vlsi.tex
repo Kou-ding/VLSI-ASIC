@@ -24,6 +24,13 @@
 \usepackage{enumitem} % For custom itemizes
 \usepackage{hyperref} % For hyperlinks and references
 
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\definecolor{successgreen}{RGB}{34, 139, 34}
+\definecolor{warningorange}{RGB}{255, 165, 0}
+
+
 \begin{document}
 
 \begin{titlepage}
@@ -71,8 +78,62 @@
     \item Innovus - Χωροθέτηση, Τοποθέτηση και Δρομολόγηση
     \item Tempus - Ανάλυση Χρονισμού
 \end{itemize}
-Η υλοποίηση αυτή είναι αρχικά απλοϊκή και έπειτα, μέσω των επόμενων ασκήσεων, εξετάζουμε τροποποιήσεις αυτής ώστε να πληρούνται συγκεκριμένες προδιαγραφές.
+με σκοπό τη σύνθεση του ολοκληρωμένου κυκλώματος για τον επεξεργαστή RISC-V. Η αρχική υλοποίηση είναι απλοϊκή και έπειτα, μέσω των επόμενων ασκήσεων, εξετάζουμε τροποποιήσεις αυτής ώστε να πληρούνται συγκεκριμένες προδιαγραφές.
 
-Πρώτο βήμα είναι η σύνθεση του ολοκληρωμένου κυκλώματος για τον επεξεργαστή RISC-V.
+\subsection{Βήμα 1}
+Στο πρώτο βήμα καλούμαστε να 
+\begin{itemize}
+    \item Ορίσουμε τις βιβλιοθήκες που θα χρησιμοποιήσουμε (timing, lef, qrc)
+    \item Διαβάσουμε τον hdl κώδικα του επεξεργαστή RISC-V (picorv32.v) 
+    \item Να παρατηρήσουμε και να ερμηνεύσουμε τα console logs
+\end{itemize}
+
+\begin{table}[h!]
+\centering
+\caption{Genus Tool Execution Summary}
+\label{tab:genus_summary}
+    \begin{tabular}{>{\raggedright\arraybackslash}p{0.25\textwidth} >{\raggedright\arraybackslash}p{0.15\textwidth} >{\raggedright\arraybackslash}p{0.5\textwidth}}
+        \toprule
+        \textbf{Operation} & \textbf{Status} & \textbf{Details} \\
+        \midrule
+        Setting library, script and HDL paths & \textcolor{successgreen}{Success} & None \\
+        \addlinespace
+        Load timing library & \textcolor{warningorange}{Warnings} & Some cells don't have output pins defined \\
+        \addlinespace
+        Load LEF library & \textcolor{warningorange}{Warnings} & 
+        \begin{minipage}[t]{\linewidth}
+        \begin{itemize}
+            \item Some resistance values are initialized to 0 \\
+            \item Some physical cells are not defined in the library \\
+            \item According to the LEF library there are total 11 routing layers $[V(5)/H(6)]$ \\
+            \item Total of 324 usable logic and 128 usable sequential lib-cells
+        \end{itemize}
+        \end{minipage} \\
+        \addlinespace
+        Load QRC library & \textcolor{successgreen}{Success} & 
+        According to the QRC library there are total 11 routing layers $[V(5)/H(6)]$ \\
+        \addlinespace
+        Read HDL picorv32.v & \textcolor{warningorange}{Warnings} & 
+        Ignoring unsynthesizable construct $[VLOGPT-37]$ \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsection{Βήμα 2}
+Στη συνέχεια επεξεργαζόμαστε το κορυφαίο κύκλωμά μας μέσω της εντολής elaborate. Αποσπά το picorv32_wb block από τον κώδικα HDL picorv32.v
+
+\begin{table}[h!]
+\centering
+\caption{Elaborate}
+\label{tab:elaborate_summary}
+    \begin{tabular}{>{\raggedright\arraybackslash}p{0.25\textwidth} >{\raggedright\arraybackslash}p{0.15\textwidth} >{\raggedright\arraybackslash}p{0.5\textwidth}}
+        \toprule
+        \textbf{Operation} & \textbf{Status} & \textbf{Details} \\
+        \midrule
+        elaborate picorv32\_wb & \textcolor{warningorange}{Warnings} & Removes unused registers. \\
+        \addlinespace
+        \bottomrule
+    \end{tabular}
+\end{table}
 
 \end{document}
